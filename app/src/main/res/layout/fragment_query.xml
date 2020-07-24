@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/rootView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/retrieveUsersButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:text="Get Users">
+
+            </Button>
+
+            <Button
+                android:id="@+id/compoundQueryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_toEndOf="@+id/retrieveUsersButton"
+                android:text="Compound">
+
+            </Button>
+
+            <Button
+                android:id="@+id/averageQueryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_toEndOf="@+id/compoundQueryButton"
+                android:text="Average">
+
+            </Button>
+
+            <Button
+                android:id="@+id/orderAscQueryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_below="@+id/retrieveUsersButton"
+                android:text="Order Asc">
+
+            </Button>
+
+            <Button
+                android:id="@+id/orderDescQueryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_below="@+id/compoundQueryButton"
+                android:layout_toEndOf="@+id/orderAscQueryButton"
+                android:text="Order Desc">
+
+            </Button>
+
+            <Button
+                android:id="@+id/LimitedQueryButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+                android:layout_below="@+id/compoundQueryButton"
+                android:layout_toEndOf="@+id/orderDescQueryButton"
+                android:text="Limited">
+
+            </Button>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/mRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@+id/orderAscQueryButton"
+                android:scrollbars="vertical">
+
+            </androidx.recyclerview.widget.RecyclerView>
+        </RelativeLayout>
+
+
+
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+
+</FrameLayout>

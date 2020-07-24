@@ -1,0 +1,47 @@
+<resources>
+    <string name="app_name">CloudDB Reference</string>
+    <string name="open">open</string>
+    <string name="close">close</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="username">Full Name</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="sign_in">Register</string>
+    <string name="log_in">Log In</string>
+    <string name="emailOrPhone">Email / Phone</string>
+    <string name="phone">Phone Number</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="welcome_to_dashboard">Welcome To Dashboard</string>
+    <string name="logout">Logout</string>
+    <string name="profilePhone">Phone</string>
+    <string name="profileEmail">Email</string>
+    <string name="profileFullname">FullName</string>
+    <string name="start_qr_scan">Start QR Scan</string>
+    <string name="start_scan">start scan</string>
+    <string name="car_code_scanner">Car Code Scanner</string>
+    <string name="carcodescanner_site">www.carcodescanner.com</string>
+    <string name="push_token">Push Token</string>
+    <string name="get_token">get token</string>
+    <string name="update">Update</string>
+    <string name="update_image">Select Image</string>
+    <string name="remember_me">Remember Me</string>
+    <string name="title_activity_reset_password">ResetPasswordActivity</string>
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string name="hello_world">Hello Square World!</string>
+    <string name="enter_your_email">Enter Your Email</string>
+    <string name="reset_your_password_here">Reset Your Password Here</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="verifycode">Verify Code</string>
+    <string name="sendVerifyCode">Send Code</string>
+    <string name="password_register_tips">Please enter number like : 5XXXXXXXXX</string>
+    <string name="newPassword">New Password</string>
+    <string name="goto_HomePage">Go To Home Page</string>
+    <string name="todo">TODO</string>
+    <string name="deleteUser">Delete</string>
+    <string name="userId">User ID</string>
+</resources>

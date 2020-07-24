@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/blue_background">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ScrollView
+            android:id="@+id/register_scrollView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:orientation="vertical">
+
+                <EditText
+                    android:id="@+id/userIdTxt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/login_edit_background"
+                    android:drawableStart="@drawable/users"
+                    android:drawablePadding="10dp"
+                    android:hint="@string/userId"
+                    android:maxLines="1"
+                    android:padding="10dp">
+
+                </EditText>
+
+                <EditText
+                    android:id="@+id/fullNameTxt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/login_edit_background"
+                    android:drawableStart="@drawable/users"
+                    android:drawablePadding="10dp"
+                    android:hint="@string/username"
+                    android:maxLines="1"
+                    android:padding="10dp">
+
+                </EditText>
+
+                <EditText
+                    android:id="@+id/emailTxt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/login_edit_background"
+                    android:drawableStart="@drawable/contact"
+                    android:drawablePadding="10dp"
+                    android:hint="@string/emailOrPhone"
+                    android:inputType="textEmailAddress"
+                    android:maxLines="1"
+                    android:padding="10dp">
+
+                </EditText>
+
+                <EditText
+                    android:id="@+id/verifyCode"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/login_edit_background"
+                    android:drawableStart="@drawable/verify"
+                    android:drawablePadding="10dp"
+                    android:hint="@string/verifycode"
+                    android:maxLines="1"
+                    android:padding="10dp">
+
+                </EditText>
+
+
+                <EditText
+                    android:id="@+id/passwordTxt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/login_edit_background"
+                    android:drawableStart="@drawable/password"
+                    android:drawablePadding="10dp"
+                    android:hint="@string/password"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:padding="10dp">
+
+                </EditText>
+
+                <Button
+                    android:id="@+id/registerBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/button_background"
+                    android:fontFamily="@font/baloo"
+                    android:text="@string/sign_in"
+                    android:textAllCaps="false"
+                    android:textSize="21sp">
+
+                </Button>
+
+                <Button
+                    android:id="@+id/deleteBtn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/button_background"
+                    android:fontFamily="@font/baloo"
+                    android:text="@string/deleteUser"
+                    android:textAllCaps="false"
+                    android:textSize="21sp">
+
+                </Button>
+            </LinearLayout>
+        </ScrollView>
+    </RelativeLayout>
+</FrameLayout>
