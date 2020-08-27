@@ -1,5 +1,6 @@
 package com.myapps.clouddbreference.fragment
 
+
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
@@ -18,13 +19,9 @@ import com.huawei.agconnect.auth.AGConnectAuthCredential
 import com.huawei.agconnect.auth.PhoneAuthProvider
 import com.huawei.agconnect.cloud.database.CloudDBZoneQuery
 import com.myapps.clouddbreference.R
+import com.myapps.clouddbreference.model.UserSurvey
 import com.myapps.clouddbreference.adapter.RecyclerViewAdapter
 import com.myapps.clouddbreference.cloudDB.CloudDBZoneWrapper
-import com.myapps.clouddbreference.model.UserInfo
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 class QueryFragment : Fragment(), CloudDBZoneWrapper.UiCallBack {
@@ -39,12 +36,6 @@ class QueryFragment : Fragment(), CloudDBZoneWrapper.UiCallBack {
     private var limitedButton: Button? = null
     private var recyclerView: RecyclerView? = null
 
-    private var fullName: String? = null
-    private var emailOrPhone: String? = null
-    private var verifyCode: String? = null
-    private var password: String? = null
-    private var pushToken: String? = null
-
     private val mHandler = MyHandler()
     private var mCloudDBZoneWrapper: CloudDBZoneWrapper? = null
 
@@ -58,6 +49,7 @@ class QueryFragment : Fragment(), CloudDBZoneWrapper.UiCallBack {
         recyclerView = mView?.findViewById(R.id.mRecyclerView)
 
         if (AGConnectAuth.getInstance().currentUser != null) {
+
             val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
             StrictMode.setThreadPolicy(policy)
 
@@ -79,46 +71,51 @@ class QueryFragment : Fragment(), CloudDBZoneWrapper.UiCallBack {
 
         retrieveUserButton = mView?.findViewById(R.id.retrieveUsersButton)
         retrieveUserButton?.setOnClickListener {
+
             mCloudDBZoneWrapper?.getAllUsers()
+
+            /*
+            val query: CloudDBZoneQuery<UserSurvey> =
+                CloudDBZoneQuery.where(UserSurvey::class.java).equalTo("gender", "Female")
+            mCloudDBZoneWrapper?.queryUsers(query)
+
+             */
         }
 
         compoundButton = mView?.findViewById(R.id.compoundQueryButton)
         compoundButton?.setOnClickListener {
-            val query: CloudDBZoneQuery<UserInfo> =
-                CloudDBZoneQuery.where(UserInfo::class.java).greaterThan("verifyCode", "100000")
-                    .lessThan("verifyCode", "300000")
+            val query: CloudDBZoneQuery<UserSurvey> =
+                CloudDBZoneQuery.where(UserSurvey::class.java).greaterThan("pay", 1000)
+                    .lessThan("pay", 8000)
             mCloudDBZoneWrapper?.queryUsers(query)
         }
 
         averageButton = mView?.findViewById(R.id.averageQueryButton)
         averageButton?.setOnClickListener {
-
             Toast.makeText(
                 activity,
-                "VerifyCode Average : ${mCloudDBZoneWrapper?.averageVerifyCode()}",
-                Toast.LENGTH_SHORT
+                "Age Average : ${mCloudDBZoneWrapper?.average()}",
+                Toast.LENGTH_LONG
             ).show()
-
         }
 
         orderAscButton = mView?.findViewById(R.id.orderAscQueryButton)
         orderAscButton?.setOnClickListener {
-            val query: CloudDBZoneQuery<UserInfo> =
-                CloudDBZoneQuery.where(UserInfo::class.java).orderByAsc("verifyCode")
+            val query: CloudDBZoneQuery<UserSurvey> =
+                CloudDBZoneQuery.where(UserSurvey::class.java).orderByAsc("age")
             mCloudDBZoneWrapper?.queryUsers(query)
         }
-
         orderDescButton = mView?.findViewById(R.id.orderDescQueryButton)
         orderDescButton?.setOnClickListener {
-            val query: CloudDBZoneQuery<UserInfo> =
-                CloudDBZoneQuery.where(UserInfo::class.java).orderByDesc("verifyCode")
+            val query: CloudDBZoneQuery<UserSurvey> =
+                CloudDBZoneQuery.where(UserSurvey::class.java).orderByDesc("pay")
             mCloudDBZoneWrapper?.queryUsers(query)
         }
 
         limitedButton = mView?.findViewById(R.id.LimitedQueryButton)
         limitedButton?.setOnClickListener {
-            val query: CloudDBZoneQuery<UserInfo> =
-                CloudDBZoneQuery.where(UserInfo::class.java).orderByDesc("verifyCode").limit(3)
+            val query: CloudDBZoneQuery<UserSurvey> =
+                CloudDBZoneQuery.where(UserSurvey::class.java).orderByDesc("age").limit(4)
             mCloudDBZoneWrapper?.queryUsers(query)
         }
 
@@ -128,6 +125,7 @@ class QueryFragment : Fragment(), CloudDBZoneWrapper.UiCallBack {
 
     private fun signIn(credential: AGConnectAuthCredential) {
         AGConnectAuth.getInstance().signIn(credential).addOnSuccessListener {
+
             val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
             StrictMode.setThreadPolicy(policy)
 
@@ -147,32 +145,17 @@ class QueryFragment : Fragment(), CloudDBZoneWrapper.UiCallBack {
             }
     }
 
-    private fun retrievePerson(userList: MutableList<UserInfo>) {
-        val userInfoRecyclerViewAdapter = RecyclerViewAdapter(activity!!, userList)
-        recyclerView!!.layoutManager = LinearLayoutManager(activity)
-        recyclerView!!.adapter = userInfoRecyclerViewAdapter
-    }
-
     private class MyHandler : Handler() {
         override fun handleMessage(msg: Message) {
             // dummy
         }
     }
 
-    override fun onAddOrQueryUserList(userList: MutableList<UserInfo>?) {
-        for (i in 0 until userList!!.size) {
-            fullName = userList[i].fullName.toString()
-            emailOrPhone = userList[i].emailOrPhone.toString()
-            verifyCode = userList[i].verifyCode.toString()
-            password = userList[i].password.toString()
-            pushToken = userList[i].pushToken.toString()
-            Log.i(
-                "User List", "$fullName $emailOrPhone $verifyCode " +
-                        "$password $pushToken"
-            )
-        }
+    override fun onAddOrQueryUserList(userList: MutableList<UserSurvey>) {
         mHandler.post {
-            retrievePerson(userList)
+            val userInfoRecyclerViewAdapter = RecyclerViewAdapter(activity!!, userList)
+            recyclerView!!.layoutManager = LinearLayoutManager(activity)
+            recyclerView!!.adapter = userInfoRecyclerViewAdapter
         }
     }
 
@@ -184,10 +167,9 @@ class QueryFragment : Fragment(), CloudDBZoneWrapper.UiCallBack {
         TODO("Not yet implemented")
     }
 
-    override fun onSubscribeUserList(userList: MutableList<UserInfo>) {
+    override fun onSubscribeUserList(userList: MutableList<UserSurvey>) {
         mHandler.post {
-            if (userList.isNotEmpty() && activity != null)
-            {
+            if (activity != null){
                 val userInfoRecyclerViewAdapter = RecyclerViewAdapter(activity!!, userList)
                 recyclerView!!.layoutManager = LinearLayoutManager(activity)
                 recyclerView!!.adapter = userInfoRecyclerViewAdapter
@@ -196,7 +178,7 @@ class QueryFragment : Fragment(), CloudDBZoneWrapper.UiCallBack {
         }
     }
 
-    override fun onDeleteUserList(userList: MutableList<UserInfo>?) {
+    override fun onDeleteUserList(userList: MutableList<UserSurvey>?) {
         TODO("Not yet implemented")
     }
 }

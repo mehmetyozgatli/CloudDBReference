@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CloudDB Reference</string>
+    <string name="app_name">User Survey</string>
     <string name="open">open</string>
     <string name="close">close</string>
 
@@ -8,7 +8,7 @@
     <string name="username">Full Name</string>
     <string name="password">Password</string>
     <string name="forgot_password">Forgot Password?</string>
-    <string name="sign_in">Register</string>
+    <string name="sign_in">Upsert</string>
     <string name="log_in">Log In</string>
     <string name="emailOrPhone">Email / Phone</string>
     <string name="phone">Phone Number</string>
@@ -44,4 +44,6 @@
     <string name="todo">TODO</string>
     <string name="deleteUser">Delete</string>
     <string name="userId">User ID</string>
+    <string name="age">Age</string>
+    <string name="salary">Salary</string>
 </resources>

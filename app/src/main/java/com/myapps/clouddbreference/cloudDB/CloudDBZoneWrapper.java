@@ -15,7 +15,7 @@ import com.huawei.agconnect.cloud.database.OnFailureListener;
 import com.huawei.agconnect.cloud.database.OnSnapshotListener;
 import com.huawei.agconnect.cloud.database.OnSuccessListener;
 import com.huawei.agconnect.cloud.database.exceptions.AGConnectCloudDBException;
-import com.myapps.clouddbreference.model.UserInfo;
+import com.myapps.clouddbreference.model.UserSurvey;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,12 +53,8 @@ public class CloudDBZoneWrapper {
         }
     }
 
-    /**
-     * Call AGConnectCloudDB.openCloudDBZone to open a cloudDBZone.
-     * We set it with cloud cache mode, and data can be store in local storage
-     */
     public void openCloudDBZone() {
-        mConfig = new CloudDBZoneConfig("CarCodeScanner",
+        mConfig = new CloudDBZoneConfig("CloudReference",
                 CloudDBZoneConfig.CloudDBZoneSyncProperty.CLOUDDBZONE_CLOUD_CACHE,
                 CloudDBZoneConfig.CloudDBZoneAccessProperty.CLOUDDBZONE_PUBLIC);
         mConfig.setPersistenceEnabled(true);
@@ -70,9 +66,6 @@ public class CloudDBZoneWrapper {
         }
     }
 
-    /**
-     * Call AGConnectCloudDB.closeCloudDBZone
-     */
     public void closeCloudDBZone() {
         try {
             mRegister.remove();
@@ -83,10 +76,6 @@ public class CloudDBZoneWrapper {
         }
     }
 
-
-    /**
-     * Call AGConnectCloudDB.deleteCloudDBZone
-     */
     public void deleteCloudDBZone() {
         try {
             mCloudDB.deleteCloudDBZone(mConfig.getCloudDBZoneName());
@@ -96,7 +85,7 @@ public class CloudDBZoneWrapper {
         }
     }
 
-    private void updateUserIndex(UserInfo userInfo) {
+    private void updateUserIndex(UserSurvey userInfo) {
         try {
             mReadWriteLock.writeLock().lock();
             if (mUserIndex < userInfo.getId()) {
@@ -107,19 +96,19 @@ public class CloudDBZoneWrapper {
         }
     }
 
-    private OnSnapshotListener<UserInfo> mSnapshotListener = new OnSnapshotListener<UserInfo>() {
+    private OnSnapshotListener<UserSurvey> mSnapshotListener = new OnSnapshotListener<UserSurvey>() {
         @Override
-        public void onSnapshot(CloudDBZoneSnapshot<UserInfo> cloudDBZoneSnapshot, AGConnectCloudDBException e) {
+        public void onSnapshot(CloudDBZoneSnapshot<UserSurvey> cloudDBZoneSnapshot, AGConnectCloudDBException e) {
             if (e != null) {
                 Log.w(TAG, "onSnapshot: " + e.getMessage());
                 return;
             }
-            CloudDBZoneObjectList<UserInfo> snapshotObjects = cloudDBZoneSnapshot.getSnapshotObjects();
-            List<UserInfo> userInfoList = new ArrayList<>();
+            CloudDBZoneObjectList<UserSurvey> snapshotObjects = cloudDBZoneSnapshot.getSnapshotObjects();
+            List<UserSurvey> userInfoList = new ArrayList<>();
             try {
                 if (snapshotObjects != null) {
                     while (snapshotObjects.hasNext()) {
-                        UserInfo userInfo = snapshotObjects.next();
+                        UserSurvey userInfo = snapshotObjects.next();
                         userInfoList.add(userInfo);
                         updateUserIndex(userInfo);
                     }
@@ -141,7 +130,7 @@ public class CloudDBZoneWrapper {
             return;
         }
         try {
-            CloudDBZoneQuery<UserInfo> snapshotQuery = CloudDBZoneQuery.where(UserInfo.class);
+            CloudDBZoneQuery<UserSurvey> snapshotQuery = CloudDBZoneQuery.where(UserSurvey.class);
             mRegister = mCloudDBZone.subscribeSnapshot(snapshotQuery,
                     CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY, mSnapshotListener);
         } catch (AGConnectCloudDBException e) {
@@ -154,12 +143,12 @@ public class CloudDBZoneWrapper {
             Log.w(TAG, "GET USER DETAIL : CloudDBZone is null, try re-open it");
             return;
         }
-        CloudDBZoneTask<CloudDBZoneSnapshot<UserInfo>> queryTask = mCloudDBZone.executeQuery(
-                CloudDBZoneQuery.where(UserInfo.class),
+        CloudDBZoneTask<CloudDBZoneSnapshot<UserSurvey>> queryTask = mCloudDBZone.executeQuery(
+                CloudDBZoneQuery.where(UserSurvey.class),
                 CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY);
-        queryTask.addOnSuccessListener(new OnSuccessListener<CloudDBZoneSnapshot<UserInfo>>() {
+        queryTask.addOnSuccessListener(new OnSuccessListener<CloudDBZoneSnapshot<UserSurvey>>() {
             @Override
-            public void onSuccess(CloudDBZoneSnapshot<UserInfo> snapshot) {
+            public void onSuccess(CloudDBZoneSnapshot<UserSurvey> snapshot) {
                 userListResult(snapshot);
                 Log.w(TAG, "GET USER DETAIL : GoResults: ");
             }
@@ -167,20 +156,21 @@ public class CloudDBZoneWrapper {
             @Override
             public void onFailure(Exception e) {
                 if (mUiCallBack != null) {
-                    mUiCallBack.updateUiOnError("GET USER DETAIL : Query user list from cloud failed");
+                    mUiCallBack.updateUiOnError("GET USER DETAIL : " +
+                            "Query user list from cloud failed");
                 }
                 Log.e("onFailure", "onFailure: " + e);
             }
         });
     }
 
-    public void queryUsers(CloudDBZoneQuery<UserInfo> query) {
+    public void queryUsers(CloudDBZoneQuery<UserSurvey> query) {
         if (mCloudDBZone == null) {
             Log.w(TAG, "CloudDBZone is null, try re-open it");
             return;
         }
-
-        CloudDBZoneTask<CloudDBZoneSnapshot<UserInfo>> queryTask = mCloudDBZone.executeQuery(query,
+        CloudDBZoneTask<CloudDBZoneSnapshot<UserSurvey>> queryTask =
+                mCloudDBZone.executeQuery(query,
                 CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY);
         queryTask.await();
         if (!queryTask.isSuccessful()) {
@@ -190,18 +180,19 @@ public class CloudDBZoneWrapper {
         userListResult(queryTask.getResult());
     }
 
-    private void userListResult (CloudDBZoneSnapshot<UserInfo> snapshot) {
-        CloudDBZoneObjectList<UserInfo> userInfoCursor = snapshot.getSnapshotObjects();
-        List<UserInfo> userInfoList = new ArrayList<>();
+    private void userListResult (CloudDBZoneSnapshot<UserSurvey> snapshot) {
+        CloudDBZoneObjectList<UserSurvey> userInfoCursor = snapshot.getSnapshotObjects();
+        List<UserSurvey> userInfoList = new ArrayList<>();
         try {
             while (userInfoCursor.hasNext()) {
-                UserInfo userInfo = userInfoCursor.next();
+                UserSurvey userInfo = userInfoCursor.next();
                 userInfoList.add(userInfo);
                 Log.w(TAG, "USER DETAIL RESULT : processQueryResult: ");
 
             }
         } catch (AGConnectCloudDBException e) {
-            Log.w(TAG, "USER DETAIL RESULT : processQueryResult: " + e.getMessage());
+            Log.w(TAG, "USER DETAIL RESULT : " +
+                    "processQueryResult: " + e.getMessage());
         }
         snapshot.release();
         if (mUiCallBack != null) {
@@ -209,14 +200,14 @@ public class CloudDBZoneWrapper {
         }
     }
 
-    public double averageVerifyCode(){
+    public double average(){
         if (mCloudDBZone == null) {
             Log.w(TAG, "INSERT USER : CloudDBZone is null, try re-open it");
             return 0;
         }
-        CloudDBZoneQuery<UserInfo> query;
-        query = CloudDBZoneQuery.where(UserInfo.class);
-        CloudDBZoneTask<Double> averageQueryTask = mCloudDBZone.executeAverageQuery(query, "id",
+        CloudDBZoneQuery<UserSurvey> query;
+        query = CloudDBZoneQuery.where(UserSurvey.class);
+        CloudDBZoneTask<Double> averageQueryTask = mCloudDBZone.executeAverageQuery(query, "age",
                 CloudDBZoneQuery.CloudDBZoneQueryPolicy.POLICY_QUERY_FROM_CLOUD_ONLY);
         averageQueryTask.await();
         if (averageQueryTask.getException() != null) {
@@ -227,7 +218,7 @@ public class CloudDBZoneWrapper {
         return averageQueryTask.getResult();
     }
 
-    public void insertUser(UserInfo user) {
+    public void insertUser(UserSurvey user) {
 
         if (mCloudDBZone == null) {
             Log.w(TAG, "INSERT USER : CloudDBZone is null, try re-open it");
@@ -255,7 +246,7 @@ public class CloudDBZoneWrapper {
         }
     }
 
-    public void deleteUserInfo(List<UserInfo> userList) {
+    public void deleteUserInfo(List<UserSurvey> userList) {
         if (mCloudDBZone == null) {
             Log.w(TAG, "CloudDBZone is null, try re-open it");
             return;
@@ -279,52 +270,35 @@ public class CloudDBZoneWrapper {
         });
     }
 
-
-    /**
-     * Call back to update ui in MainActivity
-     */
     public interface UiCallBack {
         UiCallBack DEFAULT = new UiCallBack() {
-
             @Override
-            public void onAddOrQueryUserList(List<UserInfo> userList) {
+            public void onAddOrQueryUserList(List<UserSurvey> userList) {
                 Log.w(TAG, "Using default onAddOrQuery");
             }
-
             @Override
-            public void onSubscribeUserList(List<UserInfo> userList) {
+            public void onSubscribeUserList(List<UserSurvey> userList) {
                 Log.w(TAG, "Using default onSubscribe");
             }
-
             @Override
-            public void onDeleteUserList(List<UserInfo> userList) {
+            public void onDeleteUserList(List<UserSurvey> userList) {
                 Log.w(TAG, "Using default onDelete");
             }
-
             @Override
             public void updateUiOnError(String errorMessage) {
                 Log.w(TAG, "Using default updateUiOnError");
             }
-
             @Override
             public void isDataUpsert(Boolean state) {
                 Log.w(TAG, "Using default isDataUpsert");
             }
         };
-
-        void onAddOrQueryUserList(List<UserInfo> userList);
-        void isDataUpsert(Boolean state); // Veri eklerken
-        void onSubscribeUserList(List<UserInfo> userList);
-        void onDeleteUserList(List<UserInfo> userList);
+        void onAddOrQueryUserList(List<UserSurvey> userList);
+        void isDataUpsert(Boolean state);
+        void onSubscribeUserList(List<UserSurvey> userList);
+        void onDeleteUserList(List<UserSurvey> userList);
         void updateUiOnError(String errorMessage);
-
     }
-
-    /**
-     * Add a callback to update book info list
-     *
-     * @param uiCallBack callback to update book list
-     */
     public void addCallBacks(UiCallBack uiCallBack) {
         mUiCallBack = uiCallBack;
     }

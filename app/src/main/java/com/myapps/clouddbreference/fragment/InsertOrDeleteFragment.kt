@@ -9,33 +9,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.huawei.agconnect.cloud.database.CloudDBZoneQuery
 import com.myapps.clouddbreference.R
+import com.myapps.clouddbreference.model.UserSurvey
 import com.myapps.clouddbreference.cloudDB.CloudDBZoneWrapper
-import com.myapps.clouddbreference.model.UserInfo
 
 
 class InsertOrDeleteFragment : Fragment(), CloudDBZoneWrapper.UiCallBack {
 
     private var mView: View? = null
 
-    private var userID: String? = null
+    private var userId: Int? = null
     private var fullName: String? = null
-    private var emailOrPhone: String? = null
-    private var verifyCode: String? = null
-    private var password: String? = null
-
-    private var mUserID: TextView? = null
-    private var mFullName: TextView? = null
-    private var mEmail: TextView? = null
-    private var mPassword: TextView? = null
-    private var mVerifyCode: TextView? = null
-
-    private var registerButton: Button? = null
-    private var deleteButton: Button? = null
+    private var gender: String? = null
+    private var age: Int? = null
+    private var isMarried: Boolean? = null
+    private var pay: Int? = null
 
     private val mHandler = MyHandler()
     private var mCloudDBZoneWrapper: CloudDBZoneWrapper? = null
@@ -48,44 +41,56 @@ class InsertOrDeleteFragment : Fragment(), CloudDBZoneWrapper.UiCallBack {
 
         mView = inflater.inflate(R.layout.fragment_insert_or_delete, container, false)
 
-        mUserID = mView?.findViewById(R.id.userIdTxt)
-        mFullName = mView?.findViewById(R.id.fullNameTxt)
-        mEmail = mView?.findViewById(R.id.emailTxt)
-        mPassword = mView?.findViewById(R.id.passwordTxt)
-        mVerifyCode = mView?.findViewById(R.id.verifyCode)
+        val mUserId : TextView? = mView?.findViewById(R.id.userId)
+        val mFullName: TextView? = mView?.findViewById(R.id.fullName)
+        val maleRadioButton: RadioButton? = mView?.findViewById(R.id.radioMale)
+        val femaleRadioButton: RadioButton? = mView?.findViewById(R.id.radioFemale)
+        val mAge: TextView? = mView?.findViewById(R.id.age)
+        val marriedYesRadioButton: RadioButton? = mView?.findViewById(R.id.radioYes)
+        val marriedNoRadioButton: RadioButton? = mView?.findViewById(R.id.radioNo)
+        val mPay: TextView? = mView?.findViewById(R.id.salary)
 
         val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
         StrictMode.setThreadPolicy(policy)
 
         CloudDBZoneWrapper.initAGConnectCloudDB(activity)
-        mCloudDBZoneWrapper =
-            CloudDBZoneWrapper()
+        mCloudDBZoneWrapper = CloudDBZoneWrapper()
         mHandler.post {
             mCloudDBZoneWrapper?.addCallBacks(this)
             mCloudDBZoneWrapper?.createObjectType()
             mCloudDBZoneWrapper?.openCloudDBZone()
         }
 
-        registerButton = mView?.findViewById(R.id.registerBtn)
-        registerButton?.setOnClickListener {
+        val upsertButton: Button? = mView?.findViewById(R.id.upsertBtn)
+        upsertButton?.setOnClickListener {
             try {
-                userID = mUserID?.text.toString().trim()
+                userId = mUserId?.text.toString().toInt()
+
                 fullName = mFullName?.text.toString().trim()
-                emailOrPhone = mEmail?.text.toString().trim()
-                verifyCode = mVerifyCode?.text.toString().trim()
-                password = mPassword?.text.toString().trim()
 
-                val id = userID!!.toInt()
+                if (maleRadioButton!!.isChecked) {
+                    gender = "Male"
+                } else if (femaleRadioButton!!.isChecked) {
+                    gender = "Female"
+                }
 
-                val user = UserInfo()
-                user.id = id
+                age = mAge?.text.toString().toInt()
+
+                if (marriedYesRadioButton!!.isChecked) {
+                    isMarried = true
+                } else if (marriedNoRadioButton!!.isChecked) {
+                    isMarried = false
+                }
+
+                pay = mPay?.text.toString().toInt()
+
+                val user = UserSurvey()
+                user.id = userId
                 user.fullName = fullName
-                user.emailOrPhone = emailOrPhone
-                user.verifyCode = verifyCode
-                user.password = password
-                user.pushToken = "test"
-
-                Log.d("Test", "${userID!!.toInt()} $fullName $emailOrPhone $verifyCode $password")
+                user.gender = gender
+                user.age = age
+                user.isMarried = isMarried
+                user.pay = pay
 
                 mHandler.post { mCloudDBZoneWrapper?.insertUser(user) }
 
@@ -97,17 +102,18 @@ class InsertOrDeleteFragment : Fragment(), CloudDBZoneWrapper.UiCallBack {
             }
         }
 
-        deleteButton = mView?.findViewById(R.id.deleteBtn)
+        val deleteButton: Button? = mView?.findViewById(R.id.deleteBtn)
         deleteButton?.setOnClickListener {
 
             try {
-                userID = mUserID?.text.toString().trim()
-                val id = userID!!.toInt()
 
-                val query: CloudDBZoneQuery<UserInfo> = CloudDBZoneQuery.where(UserInfo::class.java)
-                    .equalTo("id", id)
+                userId = mUserId?.text.toString().toInt()
+
+                val query: CloudDBZoneQuery<UserSurvey> = CloudDBZoneQuery.where(UserSurvey::class.java)
+                    .equalTo("id", userId!!)
                 mCloudDBZoneWrapper?.queryUsers(query)
                 Toast.makeText(activity, "Deleted", Toast.LENGTH_LONG).show()
+
 
             } catch (e: Exception) {
                 Toast.makeText(activity, "error: " + e.message, Toast.LENGTH_LONG).show()
@@ -124,7 +130,7 @@ class InsertOrDeleteFragment : Fragment(), CloudDBZoneWrapper.UiCallBack {
         }
     }
 
-    override fun onAddOrQueryUserList(userList: MutableList<UserInfo>?) {
+    override fun onAddOrQueryUserList(userList: MutableList<UserSurvey>?) {
         mHandler.post { mCloudDBZoneWrapper?.deleteUserInfo(userList) }
     }
 
@@ -140,11 +146,11 @@ class InsertOrDeleteFragment : Fragment(), CloudDBZoneWrapper.UiCallBack {
         }
     }
 
-    override fun onSubscribeUserList(userList: MutableList<UserInfo>?) {
-        Log.w("onSubscribeUserList", "onSubscribeUserList")
+    override fun onSubscribeUserList(userList: MutableList<UserSurvey>) {
+        Log.w("onSubscribeUserList", "onSubscribeUserList $userId")
     }
 
-    override fun onDeleteUserList(userList: MutableList<UserInfo>?) {
+    override fun onDeleteUserList(userList: MutableList<UserSurvey>?) {
         Log.w("DeleteUser", "Deleted User ID:")
     }
 }

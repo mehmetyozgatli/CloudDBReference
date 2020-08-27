@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 .replace(R.id.fragment_container, QueryFragment()).commit()
 
             R.id.menu_insertOrDelete -> supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, InsertOrDeleteFragment()).commit()
+                    .replace(R.id.fragment_container, InsertOrDeleteFragment()).commit()
 
         }
 
