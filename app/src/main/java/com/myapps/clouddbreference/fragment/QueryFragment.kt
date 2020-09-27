@@ -4,7 +4,6 @@ package com.myapps.clouddbreference.fragment
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.os.StrictMode
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -50,9 +49,6 @@ class QueryFragment : Fragment(), CloudDBZoneWrapper.UiCallBack {
 
         if (AGConnectAuth.getInstance().currentUser != null) {
 
-            val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
-            StrictMode.setThreadPolicy(policy)
-
             CloudDBZoneWrapper.initAGConnectCloudDB(activity)
             mCloudDBZoneWrapper = CloudDBZoneWrapper()
             mHandler.post {
@@ -72,7 +68,7 @@ class QueryFragment : Fragment(), CloudDBZoneWrapper.UiCallBack {
         retrieveUserButton = mView?.findViewById(R.id.retrieveUsersButton)
         retrieveUserButton?.setOnClickListener {
 
-            mCloudDBZoneWrapper?.getAllUsers()
+            mCloudDBZoneWrapper?.queryAllUsers()
 
             /*
             val query: CloudDBZoneQuery<UserSurvey> =
@@ -126,12 +122,8 @@ class QueryFragment : Fragment(), CloudDBZoneWrapper.UiCallBack {
     private fun signIn(credential: AGConnectAuthCredential) {
         AGConnectAuth.getInstance().signIn(credential).addOnSuccessListener {
 
-            val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
-            StrictMode.setThreadPolicy(policy)
-
             CloudDBZoneWrapper.initAGConnectCloudDB(activity)
-            mCloudDBZoneWrapper =
-                CloudDBZoneWrapper()
+            mCloudDBZoneWrapper = CloudDBZoneWrapper()
             mHandler.post {
                 mCloudDBZoneWrapper?.addCallBacks(this)
                 mCloudDBZoneWrapper?.createObjectType()
@@ -151,26 +143,22 @@ class QueryFragment : Fragment(), CloudDBZoneWrapper.UiCallBack {
         }
     }
 
-    override fun onAddOrQueryUserList(userList: MutableList<UserSurvey>) {
+    override fun onAddOrQuery(userInfoList: List<UserSurvey>) {
         mHandler.post {
-            val userInfoRecyclerViewAdapter = RecyclerViewAdapter(activity!!, userList)
+            val userInfoRecyclerViewAdapter = RecyclerViewAdapter(activity!!,
+                userInfoList as MutableList<UserSurvey>
+            )
             recyclerView!!.layoutManager = LinearLayoutManager(activity)
             recyclerView!!.adapter = userInfoRecyclerViewAdapter
         }
     }
 
-    override fun updateUiOnError(errorMessage: String?) {
-        Log.w("UpdateUiOnError", "ERROR upsert: $errorMessage")
-    }
-
-    override fun isDataUpsert(state: Boolean?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onSubscribeUserList(userList: MutableList<UserSurvey>) {
+    override fun onSubscribe(userInfoList: List<UserSurvey>?) {
         mHandler.post {
             if (activity != null){
-                val userInfoRecyclerViewAdapter = RecyclerViewAdapter(activity!!, userList)
+                val userInfoRecyclerViewAdapter = RecyclerViewAdapter(activity!!,
+                    userInfoList as MutableList<UserSurvey>
+                )
                 recyclerView!!.layoutManager = LinearLayoutManager(activity)
                 recyclerView!!.adapter = userInfoRecyclerViewAdapter
                 Log.w("onSubscribeUserList", "onSubscribeUserList")
@@ -178,7 +166,11 @@ class QueryFragment : Fragment(), CloudDBZoneWrapper.UiCallBack {
         }
     }
 
-    override fun onDeleteUserList(userList: MutableList<UserSurvey>?) {
+    override fun onDelete(userInfoList: List<UserSurvey>?) {
         TODO("Not yet implemented")
+    }
+
+    override fun updateUiOnError(errorMessage: String?) {
+        Log.w("UpdateUiOnError", "ERROR : $errorMessage")
     }
 }

@@ -3,7 +3,6 @@ package com.myapps.clouddbreference.fragment
 import android.os.Bundle
 import android.os.Handler
 import android.os.Message
-import android.os.StrictMode
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,8 +14,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.huawei.agconnect.cloud.database.CloudDBZoneQuery
 import com.myapps.clouddbreference.R
-import com.myapps.clouddbreference.model.UserSurvey
 import com.myapps.clouddbreference.cloudDB.CloudDBZoneWrapper
+import com.myapps.clouddbreference.model.UserSurvey
 
 
 class InsertOrDeleteFragment : Fragment(), CloudDBZoneWrapper.UiCallBack {
@@ -49,9 +48,6 @@ class InsertOrDeleteFragment : Fragment(), CloudDBZoneWrapper.UiCallBack {
         val marriedYesRadioButton: RadioButton? = mView?.findViewById(R.id.radioYes)
         val marriedNoRadioButton: RadioButton? = mView?.findViewById(R.id.radioNo)
         val mPay: TextView? = mView?.findViewById(R.id.salary)
-
-        val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
-        StrictMode.setThreadPolicy(policy)
 
         CloudDBZoneWrapper.initAGConnectCloudDB(activity)
         mCloudDBZoneWrapper = CloudDBZoneWrapper()
@@ -92,7 +88,7 @@ class InsertOrDeleteFragment : Fragment(), CloudDBZoneWrapper.UiCallBack {
                 user.isMarried = isMarried
                 user.pay = pay
 
-                mHandler.post { mCloudDBZoneWrapper?.insertUser(user) }
+                mHandler.post { mCloudDBZoneWrapper?.upsertUserInfos(user) }
 
                 Toast.makeText(activity, "Success", Toast.LENGTH_LONG).show()
 
@@ -130,27 +126,19 @@ class InsertOrDeleteFragment : Fragment(), CloudDBZoneWrapper.UiCallBack {
         }
     }
 
-    override fun onAddOrQueryUserList(userList: MutableList<UserSurvey>?) {
-        mHandler.post { mCloudDBZoneWrapper?.deleteUserInfo(userList) }
+    override fun onAddOrQuery(userInfoList: List<UserSurvey>) {
+        mHandler.post { mCloudDBZoneWrapper?.deleteUserInfos(userInfoList) }
+    }
+
+    override fun onSubscribe(userInfoList: List<UserSurvey>?) {
+        Log.w("onSubscribeUserList", "onSubscribeUserList")
+    }
+
+    override fun onDelete(userInfoList: List<UserSurvey>?) {
+        Log.w("DeleteUser", "Deleted User ID:")
     }
 
     override fun updateUiOnError(errorMessage: String?) {
         Log.w("UpdateUiOnError", "ERROR: $errorMessage")
-    }
-
-    override fun isDataUpsert(state: Boolean?) {
-        if (state!!) {
-            Log.w("DataUpsert", "INSERT USER : upsert")
-        } else {
-            Log.w("DataUpsert", "ERROR upsert")
-        }
-    }
-
-    override fun onSubscribeUserList(userList: MutableList<UserSurvey>) {
-        Log.w("onSubscribeUserList", "onSubscribeUserList $userId")
-    }
-
-    override fun onDeleteUserList(userList: MutableList<UserSurvey>?) {
-        Log.w("DeleteUser", "Deleted User ID:")
     }
 }

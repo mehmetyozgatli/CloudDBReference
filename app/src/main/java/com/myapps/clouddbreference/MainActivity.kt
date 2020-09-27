@@ -2,6 +2,8 @@ package com.myapps.clouddbreference
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
+import android.os.Message
 import android.view.MenuItem
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.widget.Toolbar
@@ -10,6 +12,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.material.navigation.NavigationView
+import com.myapps.clouddbreference.cloudDB.CloudDBZoneWrapper
 import com.myapps.clouddbreference.fragment.InsertOrDeleteFragment
 import com.myapps.clouddbreference.fragment.QueryFragment
 
@@ -21,6 +24,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     private var fragmentManager: FragmentManager? = null
     private var fragmentTransaction: FragmentTransaction? = null
+
+    private val mHandler = MyHandler()
+    private var mCloudDBZoneWrapper: CloudDBZoneWrapper? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,5 +79,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         } else {
             super.onBackPressed()
         }
+    }
+
+    private class MyHandler : Handler() {
+        override fun handleMessage(msg: Message) {
+            // dummy
+        }
+    }
+
+    override fun onDestroy() {
+        mHandler.post { mCloudDBZoneWrapper?.closeCloudDBZone() }
+        super.onDestroy()
     }
 }

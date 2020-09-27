@@ -6,17 +6,12 @@ package com.myapps.clouddbreference.model;
 
 import com.huawei.agconnect.cloud.database.CloudDBZoneObject;
 import com.huawei.agconnect.cloud.database.annotations.DefaultValue;
-import com.huawei.agconnect.cloud.database.Text;
 import com.huawei.agconnect.cloud.database.annotations.NotNull;
-import com.huawei.agconnect.cloud.database.annotations.IsIndex;
 import com.huawei.agconnect.cloud.database.annotations.PrimaryKey;
-
-import java.util.Date;
 
 /**
  * Definition of ObjectType UserSurvey.
- *
- * @since 2020-08-26
+
  */
 public class UserSurvey extends CloudDBZoneObject {
     @PrimaryKey
